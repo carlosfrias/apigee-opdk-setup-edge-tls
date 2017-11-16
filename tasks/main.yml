@@ -1,0 +1,28 @@
+---
+# tasks file for tlsEdge
+- name: Generate Edge-UI SSL template
+  become: yes
+  template: 
+    src: edge-ui-tls.txt.j2
+    dest: /tmp/edge/edge-ui-tls.txt
+    owner: apigee
+    group: apigee
+    mode: 0644
+
+
+
+- name: Copy java key store file
+  become: yes
+  copy:
+    src: "{{ item }}"
+    dest: /tmp/edge/apimgmt.fg.rbc.com.jks
+    owner: apigee
+    group: apigee
+    mode: 0600
+  with_items: "{{ edge_ui_key_file_path }}"
+
+- name: Configure TLS Edge-UI
+  command: /opt/apigee/apigee-service/bin/apigee-service edge-ui configure-ssl -f /tmp/edge/edge-ui-tls.txt
+
+
+
